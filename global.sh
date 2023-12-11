@@ -1,0 +1,16 @@
+python  arxiv_ERM_ns.py \
+    --dataset ogbn-arxiv \
+    --lr 1e-3 \
+    --batch_size 1024 \
+    --test_batch_size 256 \
+    --hidden_dim 256 \
+    --global_dim 256 \
+    --test_freq 2 \
+    --num_workers 64 \
+    --conv_type global \
+    --num_heads 32 \
+    --num_layers 2 \
+    --num_centroids 4096 \
+    --data_root ./data/ogb \
+	--dtype bf16 \
+    --linkx_data_root ./data/linkx

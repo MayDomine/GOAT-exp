@@ -7,12 +7,11 @@ from torch_geometric.utils import to_undirected
 
 from large_model import Transformer
 from sampler import LocalSampler, dataset_drive_url, load_twitch_gamer, rand_train_test_idx, even_quantile_labels
-from inspect_tools import lookup_output
+
 
 import time
 import os
 from os import path
-import bmtrain as bmt
 import pandas as pd
 import scipy.io
 from google_drive_downloader import GoogleDriveDownloader as gdd
@@ -25,37 +24,27 @@ def train(model, loader, x, pos_enc, y, optimizer, device, conv_type):
     total_loss, total_correct, total_count = 0, 0, 0
 
     if conv_type == 'global' : 
-        if pos_enc.dtype != torch.float32:
-            loss_func = bmt.loss.FusedCrossEntropy(ignore_index=-100)
-        else:
-            loss_func = F.cross_entropy
-        optim_manager = bmt.optim.OptimManager(loss_scale=2**22)
-        optim_manager.add_optimizer(optimizer)
+
         for node_idx in loader :
             batch_size = len(node_idx)
 
             feat = x[node_idx] if torch.is_tensor(x) else x(node_idx)
             input = feat.to(device), pos_enc[node_idx].to(device), node_idx            
             
-            optim_manager.zero_grad()
+            optimizer.zero_grad()
             out = model.to(device).global_forward(*input)
-            loss = loss_func(out, y[node_idx].to(device))
-            optim_manager.backward(loss)
+            loss = F.cross_entropy(out, y[node_idx].to(device))
+            loss.backward()
             optimizer.step()
 
             total_loss += loss.item()*batch_size
             total_correct += out.argmax(dim=-1).cpu().eq(y[node_idx]).sum().item()
             total_count += batch_size
         
-            counter += 1 
+            counter += 1            
 
     else :
-        if pos_enc.dtype != torch.float32:
-            loss_func = bmt.loss.FusedCrossEntropy(ignore_index=-100)
-        else:
-            loss_func = F.cross_entropy
-        optim_manager = bmt.optim.OptimManager(loss_scale=2**22)
-        optim_manager.add_optimizer(optimizer)
+
         for edge_index, node_idx, batch_size in loader:
 
             edge_index, edge_dist = edge_index[:2], edge_index[2:]
@@ -63,13 +52,11 @@ def train(model, loader, x, pos_enc, y, optimizer, device, conv_type):
             feat = x[node_idx] if torch.is_tensor(x) else x(node_idx)
             input = feat.to(device), edge_index.to(device), edge_dist.to(device), pos_enc[node_idx[:batch_size]].to(device), node_idx[:batch_size]            
             
-            optim_manager.zero_grad()
+            optimizer.zero_grad()
             out = model.to(device)(*input)
-            loss = loss_func(out, y[node_idx[:batch_size]].to(device))
-            # loss.backward()
-            # optimizer.step()
-            optim_manager.backward(loss)
-            optim_manager.step()
+            loss = F.cross_entropy(out, y[node_idx[:batch_size]].to(device))
+            loss.backward()
+            optimizer.step()
 
             total_loss += loss.item()*batch_size
             total_correct += out.argmax(dim=-1).cpu().eq(y[node_idx[:batch_size]]).sum().item()
@@ -240,9 +227,9 @@ def main():
     parser.add_argument('--data_downloading_flag', action='store_true')
 
     # training
-    parser.add_argument('--hetero_train_prop', type=float, default=0.54)
+    parser.add_argument('--hetero_train_prop', type=float, default=0.5)
     parser.add_argument('--device', type=int, default=0)
-    parser.add_argument('--lr', type=float, default=1e-5) 
+    parser.add_argument('--lr', type=float, default=1e-3) 
     parser.add_argument('--epochs', type=int, default=500)
     parser.add_argument('--batch_size', type=int, default=1024)  #
     parser.add_argument('--test_batch_size', type=int, default=1024) #
@@ -250,11 +237,9 @@ def main():
     parser.add_argument('--test_sizes', type=int, nargs='+', default=[20,10,5]) 
     parser.add_argument('--test_freq', type=int, default=1)  #
     parser.add_argument('--num_workers', type=int, default=4) #
-    parser.add_argument('--dtype', type=str, default='fp32', choices=['fp16','fp32','bf16']) #
 
     # NN 
-    parser.add_argument('--conv_type', type=str, default='local', choices=['local', 'global', 'full', 'flash'])
-    parser.add_argument('--global_flash', action='store_true')
+    parser.add_argument('--conv_type', type=str, default='local', choices=['local', 'global', 'full'])
     parser.add_argument('--hidden_dim', type=int, default=256) 
     parser.add_argument('--global_dim', type=int, default=64) 
     parser.add_argument('--num_layers', type=int, default=1)
@@ -273,9 +258,9 @@ def main():
     parser.add_argument('--save_ckpt', action='store_true')
 
     args = parser.parse_args()
-    bmt.init_distributed()
-    assert args.dtype != "fp16", "fp16 is not supported yet"
-    args.dtype = torch.bfloat16 if args.dtype == 'bf16' else torch.float32 
+
+    print(args)
+
     # convert int to boolean:
     args.skip = args.skip > 0
     args.dist_count_norm = args.dist_count_norm > 0
@@ -296,7 +281,7 @@ def main():
         if args.dataset == 'ogbn-arxiv' :
             data.edge_index = to_undirected(data.edge_index, data.num_nodes)
         split_idx = dataset.get_idx_split()
-        x = data.x.to(dtype=args.dtype)
+        x = data.x
         y = data.y.squeeze()
 
         # Convert split indices to boolean masks and add them to `data`.
@@ -306,10 +291,6 @@ def main():
             data[f'{key}_mask'] = mask
 
         assert args.batch_size <= len(split_idx['train'])
-        if args.batch_size == -1:
-            args.batch_size = len(split_idx['train'])
-            print(args.batch_size)
-            print("whole batch training")
 
     elif args.dataset == 'arxiv-year' :
         dataset = PygNodePropPredDataset(name='ogbn-arxiv', root=data_root)
@@ -347,7 +328,7 @@ def main():
         fulldata = scipy.io.loadmat(f'{linkx_data_root}/pokec.mat')
 
         edge_index = torch.tensor(fulldata['edge_index'], dtype=torch.long)
-        node_feat = torch.tensor(fulldata['node_feat'], dtype=args.dtype)
+        node_feat = torch.tensor(fulldata['node_feat']).float()
         num_nodes = int(fulldata['num_nodes'])
 
         class MyObject:
@@ -371,7 +352,7 @@ def main():
         fulldata = scipy.io.loadmat(f'{linkx_data_root}/genius.mat')
 
         edge_index = torch.tensor(fulldata['edge_index'], dtype=torch.long)
-        node_feat = torch.tensor(fulldata['node_feat'], dtype=args.dtype)
+        node_feat = torch.tensor(fulldata['node_feat'], dtype=torch.float)
         label = torch.tensor(fulldata['label'], dtype=torch.long).squeeze()
         num_nodes = label.shape[0]
 
@@ -398,7 +379,7 @@ def main():
         edge_index = torch.tensor(fulldata['edge_index'], dtype=torch.long)
         
         num_nodes = int(fulldata['num_nodes'])
-        node_feat = torch.tensor(fulldata['node_feat'].todense(), dtype=args.dtype)
+        node_feat = torch.tensor(fulldata['node_feat'].todense(), dtype=torch.float)
 
         years = fulldata['years'].flatten()
         label = even_quantile_labels(years, num_classes, verbose=False)
@@ -440,7 +421,7 @@ def main():
         num_nodes = len(nodes)
 
         label, features = load_twitch_gamer(nodes, "mature")
-        node_feat = torch.tensor(features, dtype=args.dtype)
+        node_feat = torch.tensor(features, dtype=torch.float)
         node_feat = node_feat - node_feat.mean(dim=0, keepdim=True)
         node_feat = node_feat / node_feat.std(dim=0, keepdim=True)
         
@@ -465,7 +446,6 @@ def main():
         exit(0)
 
     assert len(args.sizes) == len(args.test_sizes)
-    torch.set_default_dtype(args.dtype)
     model = Transformer(
         num_nodes=data.num_nodes,
         in_channels=data.num_features,
@@ -482,8 +462,7 @@ def main():
         conv_type=args.conv_type,
         num_centroids=args.num_centroids,
         no_bn=args.no_bn,
-        norm_type=args.norm_type,
-        global_flash=args.global_flash
+        norm_type=args.norm_type
     )
 
     if args.conv_type == 'local' :
@@ -495,7 +474,7 @@ def main():
             dataset_name_input = args.dataset
 
         pos_enc = torch.load(f'pos_enc/{dataset_name_input}_embedding_{args.global_dim}.pt', map_location='cpu')
-    pos_enc = pos_enc.to(dtype=args.dtype)
+
     if args.eval :
         valid_loader = LocalSampler(data.edge_index, node_idx=split_idx['valid'], 
                                     num_nodes=data.num_nodes, sizes=args.test_sizes, 
@@ -532,10 +511,8 @@ def main():
                                         num_nodes=data.num_nodes, sizes=args.test_sizes, 
                                         batch_size=args.test_batch_size, shuffle=False, 
                                         num_workers=args.num_workers)
-        if args.dtype != torch.float32:
-            optimizer = bmt.optim.AdamOptimizer(model.parameters(), lr=args.lr)
-        else:
-            optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
+
+        optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
 
         if args.dataset in ['pokec', 'twitch-gamers', 'genius'] :
             train_f, test_f = train_bi, test_bi
@@ -551,7 +528,6 @@ def main():
                 os.mkdir(save_path)
         else :
             test_start_epoch = 0
-            
 
         valid_acc_final, test_acc_final, test_acc_highest = 0, 0, 0
 

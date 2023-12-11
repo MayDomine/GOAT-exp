@@ -10,20 +10,20 @@ class VectorQuantizerEMA(nn.Module):
             self, 
             num_embeddings, 
             embedding_dim, 
-            decay=0.99
+            decay=0.99,
         ):
         super(VectorQuantizerEMA, self).__init__()
 
         self._embedding_dim = embedding_dim
         self._num_embeddings = num_embeddings
 
-        self.register_buffer('_embedding', torch.randn(self._num_embeddings, self._embedding_dim*2))
-        self.register_buffer('_embedding_output', torch.randn(self._num_embeddings, self._embedding_dim*2))
-        self.register_buffer('_ema_cluster_size', torch.zeros(num_embeddings))
-        self.register_buffer('_ema_w', torch.randn(self._num_embeddings, self._embedding_dim*2))
+        self.register_buffer('_embedding', torch.randn(self._num_embeddings, self._embedding_dim*2, dtype=torch.float32))
+        self.register_buffer('_embedding_output', torch.randn(self._num_embeddings, self._embedding_dim*2, dtype=torch.float32))
+        self.register_buffer('_ema_cluster_size', torch.zeros(num_embeddings, dtype=torch.float32))
+        self.register_buffer('_ema_w', torch.randn(self._num_embeddings, self._embedding_dim*2, dtype=torch.float32))
 
         self._decay = decay
-        self.bn = torch.nn.BatchNorm1d(self._embedding_dim*2, affine=False)
+        self.bn = torch.nn.BatchNorm1d(self._embedding_dim*2, affine=False).float()
 
 
     def get_k(self) :
@@ -33,6 +33,7 @@ class VectorQuantizerEMA(nn.Module):
         return self._embedding_output[:, :self._embedding_dim]
 
     def update(self, x):
+        x = x.to(dtype=torch.float32)
         inputs_normalized = self.bn(x) 
         embedding_normalized = self._embedding
 
@@ -43,7 +44,7 @@ class VectorQuantizerEMA(nn.Module):
 
         # Encoding
         encoding_indices = torch.argmin(distances, dim=1).unsqueeze(1)
-        encodings = torch.zeros(encoding_indices.shape[0], self._num_embeddings, device=x.device)
+        encodings = torch.zeros(encoding_indices.shape[0], self._num_embeddings, device=x.device, dtype=torch.float32)
         encodings.scatter_(1, encoding_indices, 1)
 
         # Use EMA to update the embedding vectors

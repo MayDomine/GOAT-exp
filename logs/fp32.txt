@@ -1,0 +1,293 @@
+====================== Initialization ======================
+rank :          0
+local_rank :    0
+world_size :    1
+local_size :    1
+master :        localhost:10010
+device :        0
+cpus :          [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1
+                3, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 2
+                4, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 3
+                5, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 4
+                6, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 5
+                7, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 6
+                8, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 7
+                9, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 9
+                0, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 
+                101, 102, 103, 104, 105, 106, 107, 108, 109,
+                 110, 111, 112, 113, 114, 115, 116, 117, 118
+                , 119, 120, 121, 122, 123, 124, 125, 126, 12
+                7]
+
+
+Epoch: 1, Train loss:2.6730, Train acc:31.06, Epoch time: 92.4053, Train Mem:3186 MB
+Test acc: 48.43, Val+Test time used: 163.9270
+Epoch: 2, Train loss:1.8749, Train acc:50.71, Epoch time: 113.1958, Train Mem:3260 MB
+Test acc: 59.32, Val+Test time used: 148.1486
+Epoch: 3, Train loss:1.5117, Train acc:59.75, Epoch time: 35.3957, Train Mem:3260 MB
+Test acc: 65.00, Val+Test time used: 141.4042
+Epoch: 4, Train loss:1.3465, Train acc:63.34, Epoch time: 35.4492, Train Mem:3272 MB
+Test acc: 66.87, Val+Test time used: 63.9001
+Epoch: 5, Train loss:1.2546, Train acc:64.78, Epoch time: 107.8063, Train Mem:3272 MB
+Test acc: 65.59, Val+Test time used: 166.2633
+Epoch: 6, Train loss:1.2293, Train acc:65.08, Epoch time: 124.4178, Train Mem:3272 MB
+Test acc: 65.30, Val+Test time used: 192.8040
+Epoch: 7, Train loss:1.2299, Train acc:64.77, Epoch time: 121.4096, Train Mem:3272 MB
+Test acc: 64.15, Val+Test time used: 188.1498
+Epoch: 8, Train loss:1.2209, Train acc:65.21, Epoch time: 147.6480, Train Mem:3272 MB
+Test acc: 67.37, Val+Test time used: 216.8979
+Epoch: 9, Train loss:1.1955, Train acc:65.89, Epoch time: 147.1979, Train Mem:3272 MB
+Test acc: 65.42, Val+Test time used: 234.5994
+Epoch: 10, Train loss:1.1702, Train acc:66.52, Epoch time: 130.2073, Train Mem:3272 MB
+Test acc: 67.66, Val+Test time used: 232.9991
+Epoch: 11, Train loss:1.1509, Train acc:66.99, Epoch time: 147.7959, Train Mem:3272 MB
+Test acc: 67.57, Val+Test time used: 216.4036
+Epoch: 12, Train loss:1.1369, Train acc:67.32, Epoch time: 147.0151, Train Mem:3272 MB
+Test acc: 68.31, Val+Test time used: 221.7877
+Epoch: 13, Train loss:1.1271, Train acc:67.43, Epoch time: 145.3304, Train Mem:3272 MB
+Test acc: 69.84, Val+Test time used: 232.8850
+Epoch: 14, Train loss:1.1126, Train acc:67.88, Epoch time: 141.9863, Train Mem:3272 MB
+Test acc: 69.12, Val+Test time used: 226.2018
+Epoch: 15, Train loss:1.1023, Train acc:68.03, Epoch time: 163.4815, Train Mem:3272 MB
+Test acc: 68.22, Val+Test time used: 215.1015
+Epoch: 16, Train loss:1.0948, Train acc:68.23, Epoch time: 148.1032, Train Mem:3272 MB
+Test acc: 66.84, Val+Test time used: 235.8962
+Epoch: 17, Train loss:1.0865, Train acc:68.57, Epoch time: 131.4957, Train Mem:3324 MB
+Test acc: 69.99, Val+Test time used: 245.4446
+Epoch: 18, Train loss:1.0781, Train acc:68.68, Epoch time: 154.7640, Train Mem:3324 MB
+Test acc: 69.37, Val+Test time used: 209.9038
+Epoch: 19, Train loss:1.0706, Train acc:68.96, Epoch time: 156.2223, Train Mem:3324 MB
+Test acc: 66.17, Val+Test time used: 231.8845
+Epoch: 20, Train loss:1.0591, Train acc:69.23, Epoch time: 143.7923, Train Mem:3324 MB
+Test acc: 68.97, Val+Test time used: 243.3959
+Epoch: 21, Train loss:1.0523, Train acc:69.41, Epoch time: 143.5248, Train Mem:3324 MB
+Test acc: 69.92, Val+Test time used: 231.1857
+Epoch: 22, Train loss:1.0445, Train acc:69.59, Epoch time: 140.4908, Train Mem:3324 MB
+Test acc: 62.57, Val+Test time used: 225.1897
+Epoch: 23, Train loss:1.0397, Train acc:69.62, Epoch time: 147.6128, Train Mem:3324 MB
+Test acc: 69.93, Val+Test time used: 224.9858
+Epoch: 24, Train loss:1.0323, Train acc:69.84, Epoch time: 145.0367, Train Mem:3324 MB
+Test acc: 66.21, Val+Test time used: 239.7750
+Epoch: 25, Train loss:1.0295, Train acc:69.77, Epoch time: 137.3995, Train Mem:3324 MB
+Test acc: 69.36, Val+Test time used: 143.9758
+Epoch: 26, Train loss:1.0215, Train acc:70.00, Epoch time: 44.4956, Train Mem:3324 MB
+Test acc: 71.33, Val+Test time used: 95.5943
+Epoch: 27, Train loss:1.0223, Train acc:70.07, Epoch time: 41.3607, Train Mem:3324 MB
+Test acc: 67.46, Val+Test time used: 84.1073
+Epoch: 28, Train loss:1.0180, Train acc:70.18, Epoch time: 41.3598, Train Mem:3324 MB
+Test acc: 68.83, Val+Test time used: 81.3775
+Epoch: 29, Train loss:1.0116, Train acc:70.31, Epoch time: 50.3528, Train Mem:3324 MB
+Test acc: 70.09, Val+Test time used: 87.8303
+Epoch: 30, Train loss:1.0113, Train acc:70.30, Epoch time: 43.1531, Train Mem:3324 MB
+Test acc: 70.68, Val+Test time used: 80.1661
+Epoch: 31, Train loss:1.0048, Train acc:70.32, Epoch time: 44.3294, Train Mem:3324 MB
+Test acc: 70.63, Val+Test time used: 83.3999
+Epoch: 32, Train loss:1.0020, Train acc:70.44, Epoch time: 50.3836, Train Mem:3324 MB
+Test acc: 67.41, Val+Test time used: 80.9452
+Epoch: 33, Train loss:0.9973, Train acc:70.52, Epoch time: 42.7713, Train Mem:3324 MB
+Test acc: 67.41, Val+Test time used: 78.6390
+Epoch: 34, Train loss:0.9956, Train acc:70.69, Epoch time: 44.0587, Train Mem:3324 MB
+Test acc: 68.93, Val+Test time used: 88.7337
+Epoch: 35, Train loss:0.9919, Train acc:70.77, Epoch time: 49.3770, Train Mem:3324 MB
+Test acc: 68.35, Val+Test time used: 77.6736
+Epoch: 36, Train loss:0.9910, Train acc:70.75, Epoch time: 44.8103, Train Mem:3324 MB
+Test acc: 66.71, Val+Test time used: 78.1717
+Epoch: 37, Train loss:0.9828, Train acc:70.91, Epoch time: 42.6767, Train Mem:3324 MB
+Test acc: 70.78, Val+Test time used: 89.8867
+Epoch: 38, Train loss:0.9867, Train acc:70.71, Epoch time: 44.4622, Train Mem:3324 MB
+Test acc: 69.24, Val+Test time used: 76.4411
+Epoch: 39, Train loss:0.9806, Train acc:70.94, Epoch time: 43.7291, Train Mem:3324 MB
+Test acc: 68.49, Val+Test time used: 77.2876
+Epoch: 40, Train loss:0.9762, Train acc:70.94, Epoch time: 45.7100, Train Mem:3324 MB
+Test acc: 71.13, Val+Test time used: 90.8371
+Epoch: 41, Train loss:0.9773, Train acc:71.04, Epoch time: 39.4185, Train Mem:3324 MB
+Test acc: 69.69, Val+Test time used: 77.2670
+Epoch: 42, Train loss:0.9746, Train acc:71.04, Epoch time: 42.1108, Train Mem:3324 MB
+Test acc: 70.94, Val+Test time used: 77.6807
+Epoch: 43, Train loss:0.9701, Train acc:70.98, Epoch time: 46.7561, Train Mem:3324 MB
+Test acc: 70.99, Val+Test time used: 82.2829
+Epoch: 44, Train loss:0.9685, Train acc:71.23, Epoch time: 41.6754, Train Mem:3324 MB
+Test acc: 69.64, Val+Test time used: 92.9748
+Epoch: 45, Train loss:0.9671, Train acc:71.23, Epoch time: 51.9674, Train Mem:3324 MB
+Test acc: 71.00, Val+Test time used: 81.4962
+Epoch: 46, Train loss:0.9667, Train acc:71.18, Epoch time: 44.1728, Train Mem:3324 MB
+Test acc: 69.28, Val+Test time used: 89.5467
+Epoch: 47, Train loss:0.9601, Train acc:71.38, Epoch time: 52.0563, Train Mem:3324 MB
+Test acc: 69.71, Val+Test time used: 85.0573
+Epoch: 48, Train loss:0.9602, Train acc:71.32, Epoch time: 44.3274, Train Mem:3324 MB
+Test acc: 70.23, Val+Test time used: 82.8924
+Epoch: 49, Train loss:0.9639, Train acc:71.29, Epoch time: 54.8579, Train Mem:3324 MB
+Test acc: 69.45, Val+Test time used: 88.4923
+Epoch: 50, Train loss:0.9574, Train acc:71.53, Epoch time: 43.9681, Train Mem:3324 MB
+Test acc: 71.80, Val+Test time used: 82.0576
+Epoch: 51, Train loss:0.9551, Train acc:71.54, Epoch time: 57.1126, Train Mem:3324 MB
+Test acc: 69.31, Val+Test time used: 90.1634
+Epoch: 52, Train loss:0.9516, Train acc:71.59, Epoch time: 45.2546, Train Mem:3324 MB
+Test acc: 69.53, Val+Test time used: 82.8285
+Epoch: 53, Train loss:0.9506, Train acc:71.46, Epoch time: 54.6707, Train Mem:3324 MB
+Test acc: 68.18, Val+Test time used: 87.7423
+Epoch: 54, Train loss:0.9497, Train acc:71.57, Epoch time: 46.9099, Train Mem:3324 MB
+Test acc: 68.70, Val+Test time used: 86.8074
+Epoch: 55, Train loss:0.9465, Train acc:71.66, Epoch time: 45.8395, Train Mem:3324 MB
+Test acc: 69.81, Val+Test time used: 94.9627
+Epoch: 56, Train loss:0.9528, Train acc:71.49, Epoch time: 47.2464, Train Mem:3324 MB
+Test acc: 67.58, Val+Test time used: 85.9595
+Epoch: 57, Train loss:0.9445, Train acc:71.58, Epoch time: 45.8174, Train Mem:3324 MB
+Test acc: 70.73, Val+Test time used: 90.8575
+Epoch: 58, Train loss:0.9468, Train acc:71.65, Epoch time: 50.0579, Train Mem:3324 MB
+Test acc: 71.05, Val+Test time used: 82.3267
+Epoch: 59, Train loss:0.9474, Train acc:71.67, Epoch time: 46.5993, Train Mem:3324 MB
+Test acc: 70.64, Val+Test time used: 92.1175
+Epoch: 60, Train loss:0.9412, Train acc:71.74, Epoch time: 49.2793, Train Mem:3324 MB
+Test acc: 70.72, Val+Test time used: 84.5229
+Epoch: 61, Train loss:0.9383, Train acc:71.69, Epoch time: 44.7529, Train Mem:3324 MB
+Test acc: 70.57, Val+Test time used: 87.2673
+Epoch: 62, Train loss:0.9398, Train acc:71.64, Epoch time: 50.4741, Train Mem:3324 MB
+Test acc: 67.20, Val+Test time used: 88.7639
+Epoch: 63, Train loss:0.9396, Train acc:71.92, Epoch time: 45.1845, Train Mem:3324 MB
+Test acc: 68.97, Val+Test time used: 81.8946
+Epoch: 64, Train loss:0.9361, Train acc:71.93, Epoch time: 54.0883, Train Mem:3324 MB
+Test acc: 70.81, Val+Test time used: 88.2549
+Epoch: 65, Train loss:0.9374, Train acc:71.64, Epoch time: 46.7040, Train Mem:3324 MB
+Test acc: 70.74, Val+Test time used: 83.0283
+Epoch: 66, Train loss:0.9341, Train acc:71.85, Epoch time: 52.0591, Train Mem:3324 MB
+Test acc: 70.14, Val+Test time used: 87.9586
+Epoch: 67, Train loss:0.9321, Train acc:71.97, Epoch time: 45.3183, Train Mem:3324 MB
+Test acc: 70.88, Val+Test time used: 85.6727
+Epoch: 68, Train loss:0.9290, Train acc:72.02, Epoch time: 47.3546, Train Mem:3324 MB
+Test acc: 70.62, Val+Test time used: 92.9240
+Epoch: 69, Train loss:0.9296, Train acc:72.03, Epoch time: 45.4436, Train Mem:3324 MB
+Test acc: 70.56, Val+Test time used: 85.0220
+Epoch: 70, Train loss:0.9306, Train acc:71.94, Epoch time: 45.6065, Train Mem:3324 MB
+Test acc: 70.67, Val+Test time used: 96.4411
+Epoch: 71, Train loss:0.9265, Train acc:72.13, Epoch time: 46.6249, Train Mem:3324 MB
+Test acc: 69.48, Val+Test time used: 83.1033
+Epoch: 72, Train loss:0.9218, Train acc:72.03, Epoch time: 45.9139, Train Mem:3324 MB
+Test acc: 69.08, Val+Test time used: 98.1866
+Epoch: 73, Train loss:0.9204, Train acc:72.12, Epoch time: 45.7125, Train Mem:3324 MB
+Test acc: 69.16, Val+Test time used: 84.7688
+Epoch: 74, Train loss:0.9222, Train acc:72.21, Epoch time: 45.9160, Train Mem:3324 MB
+Test acc: 70.91, Val+Test time used: 95.0817
+Epoch: 75, Train loss:0.9173, Train acc:72.35, Epoch time: 47.3238, Train Mem:3324 MB
+Test acc: 69.22, Val+Test time used: 86.5530
+Epoch: 76, Train loss:0.9218, Train acc:72.16, Epoch time: 45.4501, Train Mem:3324 MB
+Test acc: 69.03, Val+Test time used: 93.4069
+Epoch: 77, Train loss:0.9179, Train acc:72.25, Epoch time: 46.8773, Train Mem:3324 MB
+Test acc: 70.75, Val+Test time used: 87.4922
+Epoch: 78, Train loss:0.9186, Train acc:72.19, Epoch time: 45.7418, Train Mem:3324 MB
+Test acc: 69.78, Val+Test time used: 91.6766
+Epoch: 79, Train loss:0.9193, Train acc:72.24, Epoch time: 50.5174, Train Mem:3324 MB
+Test acc: 69.97, Val+Test time used: 84.2252
+Epoch: 80, Train loss:0.9149, Train acc:72.30, Epoch time: 44.5804, Train Mem:3324 MB
+Test acc: 70.16, Val+Test time used: 91.3148
+Epoch: 81, Train loss:0.9154, Train acc:72.26, Epoch time: 49.9831, Train Mem:3324 MB
+Test acc: 69.66, Val+Test time used: 82.6537
+Epoch: 82, Train loss:0.9152, Train acc:72.34, Epoch time: 45.9429, Train Mem:3324 MB
+Test acc: 70.87, Val+Test time used: 90.3967
+Epoch: 83, Train loss:0.9108, Train acc:72.32, Epoch time: 51.2900, Train Mem:3324 MB
+Test acc: 71.67, Val+Test time used: 86.2718
+Epoch: 84, Train loss:0.9103, Train acc:72.44, Epoch time: 46.2531, Train Mem:3324 MB
+Test acc: 69.71, Val+Test time used: 104.7135
+Epoch: 85, Train loss:0.9111, Train acc:72.49, Epoch time: 51.8910, Train Mem:3324 MB
+Test acc: 69.58, Val+Test time used: 82.3454
+Epoch: 86, Train loss:0.9117, Train acc:72.44, Epoch time: 46.5933, Train Mem:3324 MB
+Test acc: 70.85, Val+Test time used: 90.1488
+Epoch: 87, Train loss:0.9084, Train acc:72.66, Epoch time: 50.9201, Train Mem:3324 MB
+Test acc: 70.73, Val+Test time used: 102.2288
+Epoch: 88, Train loss:0.9051, Train acc:72.42, Epoch time: 45.7248, Train Mem:3324 MB
+Test acc: 71.69, Val+Test time used: 90.8521
+Epoch: 89, Train loss:0.9068, Train acc:72.47, Epoch time: 52.1843, Train Mem:3324 MB
+Test acc: 70.61, Val+Test time used: 86.1402
+^Bs^[[CEpoch: 90, Train loss:0.9042, Train acc:72.56, Epoch time: 58.4409, Train Mem:3324 MB
+Test acc: 70.74, Val+Test time used: 89.4563
+Epoch: 91, Train loss:0.9055, Train acc:72.49, Epoch time: 52.1438, Train Mem:3324 MB
+Test acc: 69.16, Val+Test time used: 87.3206
+Epoch: 92, Train loss:0.9047, Train acc:72.52, Epoch time: 44.5715, Train Mem:3324 MB
+Test acc: 70.27, Val+Test time used: 88.9668
+Epoch: 93, Train loss:0.9004, Train acc:72.51, Epoch time: 67.6747, Train Mem:3324 MB
+Test acc: 71.10, Val+Test time used: 86.7164
+Epoch: 94, Train loss:0.9002, Train acc:72.50, Epoch time: 45.9248, Train Mem:3324 MB
+Test acc: 70.17, Val+Test time used: 88.2409
+Epoch: 95, Train loss:0.9045, Train acc:72.60, Epoch time: 50.6424, Train Mem:3324 MB
+Test acc: 70.33, Val+Test time used: 92.0070
+Epoch: 96, Train loss:0.8981, Train acc:72.66, Epoch time: 45.3414, Train Mem:3324 MB
+Test acc: 69.08, Val+Test time used: 87.8500
+Epoch: 97, Train loss:0.8982, Train acc:72.73, Epoch time: 52.0293, Train Mem:3324 MB
+Test acc: 70.52, Val+Test time used: 88.7520
+Epoch: 98, Train loss:0.8980, Train acc:72.71, Epoch time: 46.7542, Train Mem:3324 MB
+Test acc: 70.59, Val+Test time used: 83.8035
+Epoch: 99, Train loss:0.8975, Train acc:72.56, Epoch time: 52.9231, Train Mem:3324 MB
+Test acc: 70.40, Val+Test time used: 89.4848
+Epoch: 100, Train loss:0.8968, Train acc:72.71, Epoch time: 46.3406, Train Mem:3324 MB
+Test acc: 69.24, Val+Test time used: 82.1691
+Epoch: 101, Train loss:0.8937, Train acc:72.81, Epoch time: 55.5600, Train Mem:3324 MB
+Test acc: 71.52, Val+Test time used: 89.9813
+Epoch: 102, Train loss:0.8921, Train acc:72.81, Epoch time: 45.7698, Train Mem:3324 MB
+Test acc: 70.56, Val+Test time used: 84.2279
+Epoch: 103, Train loss:0.8962, Train acc:72.75, Epoch time: 53.2958, Train Mem:3324 MB
+Test acc: 70.63, Val+Test time used: 89.1450
+Epoch: 104, Train loss:0.8950, Train acc:72.62, Epoch time: 47.0282, Train Mem:3324 MB
+Test acc: 68.70, Val+Test time used: 84.6710
+Epoch: 105, Train loss:0.8983, Train acc:72.62, Epoch time: 53.9625, Train Mem:3324 MB
+Test acc: 70.64, Val+Test time used: 86.7973
+Epoch: 106, Train loss:0.8921, Train acc:72.70, Epoch time: 46.0509, Train Mem:3324 MB
+Test acc: 70.09, Val+Test time used: 87.8693
+Epoch: 107, Train loss:0.8890, Train acc:72.86, Epoch time: 53.5263, Train Mem:3324 MB
+Test acc: 70.95, Val+Test time used: 90.1850
+Epoch: 108, Train loss:0.8849, Train acc:72.91, Epoch time: 44.7929, Train Mem:3324 MB
+Test acc: 67.43, Val+Test time used: 86.1627
+Epoch: 109, Train loss:0.8862, Train acc:73.03, Epoch time: 50.1564, Train Mem:3324 MB
+Test acc: 69.00, Val+Test time used: 90.8621
+Epoch: 110, Train loss:0.8821, Train acc:73.01, Epoch time: 46.2351, Train Mem:3324 MB
+Test acc: 70.63, Val+Test time used: 87.8596
+Epoch: 111, Train loss:0.8844, Train acc:72.94, Epoch time: 48.4793, Train Mem:3324 MB
+Test acc: 70.48, Val+Test time used: 93.6278
+Epoch: 112, Train loss:0.8844, Train acc:72.80, Epoch time: 46.2257, Train Mem:3324 MB
+Test acc: 70.72, Val+Test time used: 88.3657
+Epoch: 113, Train loss:0.8813, Train acc:72.97, Epoch time: 47.2475, Train Mem:3324 MB
+Test acc: 70.80, Val+Test time used: 95.5331
+Epoch: 114, Train loss:0.8810, Train acc:73.03, Epoch time: 46.1549, Train Mem:3324 MB
+Test acc: 70.58, Val+Test time used: 84.6841
+Epoch: 115, Train loss:0.8797, Train acc:73.00, Epoch time: 46.3984, Train Mem:3324 MB
+Test acc: 70.92, Val+Test time used: 96.3839
+Epoch: 116, Train loss:0.8832, Train acc:72.98, Epoch time: 45.7930, Train Mem:3324 MB
+Test acc: 69.72, Val+Test time used: 82.7027
+Epoch: 117, Train loss:0.8755, Train acc:73.12, Epoch time: 46.8382, Train Mem:3324 MB
+Test acc: 71.09, Val+Test time used: 98.4299
+Epoch: 118, Train loss:0.8748, Train acc:73.17, Epoch time: 48.2506, Train Mem:3324 MB
+Test acc: 69.93, Val+Test time used: 83.1471
+Epoch: 119, Train loss:0.8737, Train acc:73.17, Epoch time: 47.1584, Train Mem:3324 MB
+Test acc: 68.71, Val+Test time used: 95.7558
+Epoch: 120, Train loss:0.8724, Train acc:73.15, Epoch time: 47.2704, Train Mem:3324 MB
+Test acc: 70.14, Val+Test time used: 84.7434
+Epoch: 121, Train loss:0.8753, Train acc:73.27, Epoch time: 46.1802, Train Mem:3346 MB
+Test acc: 70.91, Val+Test time used: 95.4585
+Epoch: 122, Train loss:0.8716, Train acc:73.12, Epoch time: 46.5976, Train Mem:3346 MB
+Test acc: 70.25, Val+Test time used: 86.7460
+Epoch: 123, Train loss:0.8731, Train acc:73.09, Epoch time: 47.0700, Train Mem:3364 MB
+Test acc: 66.71, Val+Test time used: 94.7716
+Epoch: 124, Train loss:0.8709, Train acc:73.23, Epoch time: 47.9057, Train Mem:3364 MB
+Test acc: 71.08, Val+Test time used: 86.5705
+Epoch: 125, Train loss:0.8695, Train acc:73.36, Epoch time: 46.9545, Train Mem:3364 MB
+Test acc: 69.90, Val+Test time used: 92.0923
+Epoch: 126, Train loss:0.8705, Train acc:73.27, Epoch time: 48.0397, Train Mem:3364 MB
+Test acc: 70.79, Val+Test time used: 101.6151
+Epoch: 127, Train loss:0.8679, Train acc:73.27, Epoch time: 45.5553, Train Mem:3364 MB
+Test acc: 71.06, Val+Test time used: 93.2136
+Epoch: 128, Train loss:0.8679, Train acc:73.22, Epoch time: 49.8706, Train Mem:3364 MB
+Test acc: 70.94, Val+Test time used: 86.9971
+Epoch: 129, Train loss:0.8666, Train acc:73.28, Epoch time: 46.3867, Train Mem:3364 MB
+Test acc: 68.58, Val+Test time used: 92.7682
+Epoch: 130, Train loss:0.8704, Train acc:73.37, Epoch time: 48.8376, Train Mem:3364 MB
+Test acc: 70.36, Val+Test time used: 83.2346
+Epoch: 131, Train loss:0.8679, Train acc:73.20, Epoch time: 47.0706, Train Mem:3364 MB
+Test acc: 69.01, Val+Test time used: 92.3892
+Epoch: 132, Train loss:0.8696, Train acc:73.27, Epoch time: 49.3952, Train Mem:3364 MB
+Test acc: 70.36, Val+Test time used: 81.7850
+Epoch: 133, Train loss:0.8662, Train acc:73.46, Epoch time: 46.3319, Train Mem:3364 MB
+Test acc: 70.43, Val+Test time used: 91.8907
+Epoch: 134, Train loss:0.8589, Train acc:73.66, Epoch time: 51.0927, Train Mem:3364 MB
+Test acc: 70.46, Val+Test time used: 85.9996
+Epoch: 135, Train loss:0.8635, Train acc:73.41, Epoch time: 45.5872, Train Mem:3364 MB
+Test acc: 70.05, Val+Test time used: 89.1859
+Epoch: 136, Train loss:0.8648, Train acc:73.36, Epoch time: 49.9690, Train Mem:3364 MB

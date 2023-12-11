@@ -1,13 +1,15 @@
 from genericpath import exists
 import math
 from typing import Optional, Tuple, Union
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
 from torch_sparse import SparseTensor
-
+try:
+    from flash_attn.flash_attn_interface import flash_attn_varlen_func,_flash_attn_varlen_forward,_flash_attn_varlen_backward
+except:
+    flash_attn_varlen_func = None
 from torch_geometric.nn.conv import MessagePassing
 from torch_geometric.nn.dense.linear import Linear
 from torch_geometric.typing import Adj, OptTensor, PairTensor
@@ -38,12 +40,13 @@ class TransformerConv(MessagePassing):
         dist_count_norm: bool = True,
         conv_type: str = 'local',
         num_centroids: Optional[int] = None,
+        global_flash=False,
         # centroid_dim: int = 64,
         **kwargs,
     ):
         kwargs.setdefault('aggr', 'add')
         super(TransformerConv, self).__init__(node_dim=0, **kwargs)
-
+        self.global_flash = global_flash
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.heads = heads
@@ -84,19 +87,24 @@ class TransformerConv(MessagePassing):
         self.spatial_encoder = torch.nn.Embedding(spatial_size+spatial_add_pad, heads)
         
         if self.conv_type != 'local' :
-            self.vq = VectorQuantizerEMA(
-                num_centroids, 
-                global_dim, 
-                decay=0.99
-            )
-            c = torch.randint(0, num_centroids, (num_nodes,), dtype=torch.short)
-            self.register_buffer('c_idx', c)
-            self.attn_fn = F.softmax
+            if not self.global_flash:
+                self.vq = VectorQuantizerEMA(
+                    num_centroids, 
+                    global_dim, 
+                    decay=0.99
+                )
+                c = torch.randint(0, num_centroids, (num_nodes,), dtype=torch.short)
+                self.register_buffer('c_idx', c)
+                self.attn_fn = F.softmax
 
-            self.lin_proj_g = Linear(in_channels, global_dim)
-            self.lin_key_g = Linear(global_dim*2, heads * out_channels)
-            self.lin_query_g = Linear(global_dim*2, heads * out_channels)
-            self.lin_value_g = Linear(global_dim, heads * out_channels)
+                self.lin_proj_g = Linear(in_channels, global_dim)
+                self.lin_query_g = Linear(global_dim*2, heads * out_channels)
+                self.lin_key_g = Linear(global_dim*2, heads * out_channels)
+                self.lin_value_g = Linear(global_dim, heads * out_channels)
+            else:
+                self.lin_query_g = Linear(in_channels*2, heads * out_channels)
+                self.lin_key_g = Linear(in_channels, heads * out_channels)
+                self.lin_value_g = Linear(in_channels, heads * out_channels)
 
         self.reset_parameters()
 
@@ -112,10 +120,28 @@ class TransformerConv(MessagePassing):
 
         torch.nn.init.zeros_(self.spatial_encoder.weight)
 
+    def _flash_forward(query, key, value):
+        cu_seqlens_q = torch.tensor([0, query.size(0)], dtype=torch.int32, device="cuda")
+        cu_seqlens_k = torch.tensor([0, key.size(0)], dtype=torch.int32, device="cuda")
+        max_seqlen_q = query.size(0)
+        max_seqlen_k = key.size(0)
+        out = flash_attn_varlen_func(query, key, value, cu_seqlens_q, cu_seqlens_k, max_seqlen_q, max_seqlen_k)
+        out = rearrange(out, 'n h d -> n (h d)')
+        return out
 
+    def flash_forward(self, x, pos_enc, batch_idx):
+        H, C = self.heads, self.out_channels 
+        x_q = x[:len(batch_idx)] 
+        x_q = torch.cat([x_q, pos_enc], dim=1)
+        query = self.lin_query_g(x_q).view(-1, H, C)
+        key = self.lin_key_g(x).view(-1, H, C)
+        value = self.lin_value(x).view(-1, H, C)
+        out = self._flash_forward(query, key, value)
+
+        return out
+    
     def forward(self, x: Tensor, edge_index: Adj, edge_attr: OptTensor = None, 
                     pos_enc=None, batch_idx=None):
-
         if self.conv_type == 'local' :
             out = self.local_forward(x, edge_index, edge_attr)[:len(batch_idx)]
 
@@ -124,9 +150,11 @@ class TransformerConv(MessagePassing):
 
         elif self.conv_type == 'full' :
             out_local = self.local_forward(x, edge_index, edge_attr)[:len(batch_idx)]
-            out_global = self.global_forward(x[:len(batch_idx)], pos_enc, batch_idx)
+            if not self.global_flash:
+                x = x[:len(batch_idx)]
+            out_global = self.global_forward(x, pos_enc, batch_idx)
             out = torch.cat([out_local, out_global], dim=1)
-            
+
         else :
             raise NotImplementedError
 
@@ -134,40 +162,40 @@ class TransformerConv(MessagePassing):
 
 
     def global_forward(self, x, pos_enc, batch_idx):
-
+        
         d, h = self.out_channels, self.heads
         scale = 1.0 / math.sqrt(d)
+        if not self.global_flash:
 
-        q_x = torch.cat([self.lin_proj_g(x), pos_enc], dim=1)
+            q_x = torch.cat([self.lin_proj_g(x), pos_enc], dim=1)
+            k_x = self.vq.get_k().to(dtype=x.dtype)
+            v_x = self.vq.get_v().to(dtype=x.dtype)
+            q = self.lin_query_g(q_x)
+            k = self.lin_key_g(k_x)
+            v = self.lin_value_g(v_x)
 
-        k_x = self.vq.get_k()
-        v_x = self.vq.get_v()
+            q, k, v = map(lambda t: rearrange(t, 'n (h d) -> h n d', h=h), (q, k, v))
+            dots = torch.einsum('h i d, h j d -> h i j', q, k) * scale
 
-        q = self.lin_query_g(q_x)
-        k = self.lin_key_g(k_x)
-        v = self.lin_value_g(v_x)
+            c, c_count = self.c_idx.unique(return_counts=True)
+            # print(f'c count mean:{c_count.float().mean().item()}, min:{c_count.min().item()}, max:{c_count.max().item()}')
 
-        q, k, v = map(lambda t: rearrange(t, 'n (h d) -> h n d', h=h), (q, k, v))
-        dots = torch.einsum('h i d, h j d -> h i j', q, k) * scale
+            centroid_count = torch.zeros(self.num_centroids, dtype=torch.long).to(x.device)
+            centroid_count[c.to(torch.long)] = c_count
+            dots += torch.log(centroid_count.view(1,1,-1))
 
-        c, c_count = self.c_idx.unique(return_counts=True)
-        # print(f'c count mean:{c_count.float().mean().item()}, min:{c_count.min().item()}, max:{c_count.max().item()}')
+            attn = self.attn_fn(dots, dim = -1)
+            attn = F.dropout(attn, p=self.dropout, training=self.training)
 
-        centroid_count = torch.zeros(self.num_centroids, dtype=torch.long).to(x.device)
-        centroid_count[c.to(torch.long)] = c_count
-        dots += torch.log(centroid_count.view(1,1,-1))
+            out = torch.einsum('h i j, h j d -> h i d', attn, v)
+            out = rearrange(out, 'h n d -> n (h d)')
 
-        attn = self.attn_fn(dots, dim = -1)
-        attn = F.dropout(attn, p=self.dropout, training=self.training)
-
-        out = torch.einsum('h i j, h j d -> h i d', attn, v)
-        out = rearrange(out, 'h n d -> n (h d)')
-
-        # Update the centroids
-        if self.training :
-            x_idx = self.vq.update(q_x)
-            self.c_idx[batch_idx] = x_idx.squeeze().to(torch.short)
-
+            # Update the centroids
+            if self.training :
+                x_idx = self.vq.update(q_x)
+                self.c_idx[batch_idx] = x_idx.squeeze().to(torch.short)
+        else:
+            out = self.flash_forward(x, pos_enc, batch_idx)
         return out
 
     def local_forward(self, x: Tensor, edge_index: Adj,
@@ -210,7 +238,6 @@ class TransformerConv(MessagePassing):
         #     assert edge_attr is not None
         #     edge_attr = self.lin_edge(edge_attr).view(-1, self.heads, self.out_channels)
         #     key_j += edge_attr
-
         alpha = (query_i * key_j).sum(dim=-1) / math.sqrt(self.out_channels)
         edge_dist, edge_dist_count = edge_attr[0], edge_attr[1]
 
@@ -232,7 +259,7 @@ class TransformerConv(MessagePassing):
                 f'{self.out_channels}, heads={self.heads})')
 
 class Transformer(torch.nn.Module):
-    def __init__(self, num_nodes, in_channels, hidden_channels, out_channels, global_dim, num_layers, heads, ff_dropout, attn_dropout, spatial_size, skip, dist_count_norm, conv_type,num_centroids, no_bn, norm_type):
+    def __init__(self, num_nodes, in_channels, hidden_channels, out_channels, global_dim, num_layers, heads, ff_dropout, attn_dropout, spatial_size, skip, dist_count_norm, conv_type,num_centroids, no_bn, norm_type, global_flash):
         super(Transformer, self).__init__()
 
         # self.fc_in = nn.Linear(in_channels, hidden_channels) ###################
@@ -260,7 +287,7 @@ class Transformer(torch.nn.Module):
         self.convs = torch.nn.ModuleList()
         self.ffs = torch.nn.ModuleList()
 
-        assert num_layers == 1
+        # assert num_layers == 1
         for _ in range(num_layers):
             self.convs.append(
                 TransformerConv(
@@ -274,7 +301,8 @@ class Transformer(torch.nn.Module):
                     skip=skip, 
                     dist_count_norm=dist_count_norm,
                     conv_type=conv_type,
-                    num_centroids=num_centroids
+                    num_centroids=num_centroids,
+                    global_flash=global_flash
                 )
             )
             h_times = 2 if conv_type == 'full' else 1

@@ -356,7 +356,7 @@ class LocalSamplerNew(torch.utils.data.DataLoader):
         return f'{self.__class__.__name__}(sizes={self.sizes})'
 
 if __name__ == '__main__' :
-    dataset = PygNodePropPredDataset(name='ogbn-arxiv', root='/cmlscratch/kong/datasets/ogb')
+    dataset = PygNodePropPredDataset(name='ogbn-arxiv', root='data/ogb')
     data = dataset[0]
     data.edge_index = to_undirected(data.edge_index, data.num_nodes)
     
@@ -390,7 +390,7 @@ if __name__ == '__main__' :
     #                         shuffle=True, num_workers=16, drop_last=True, load='arxiv_adjs_t.pt')  #total time: total time: 12.428156614303589
 
     train_loader = LocalSampler(data.edge_index, node_idx=None, num_nodes=data.num_nodes,
-                            sizes=[20,5], batch_size=1024, num_workers=4) # total time: 6.438913345336914
+                            sizes=[20,5], batch_size=32768, num_workers=128) # total time: 6.438913345336914
 
     start_time = time.time()
     for i, (edge_index, node_idx, bs) in enumerate(train_loader) :
