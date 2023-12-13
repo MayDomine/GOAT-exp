@@ -1,12 +1,12 @@
 python  arxiv_ERM_ns.py \
-    --dataset ogbn-arxiv \
+    --dataset arxiv-year \
     --lr 1e-3 \
     --batch_size 1024 \
     --test_batch_size 256 \
 	--global_flash \
     --hidden_dim 128 \
     --global_dim 128 \
-    --test_freq 4 \
+    --test_freq 1 \
     --num_workers 32 \
     --conv_type full \
     --norm_type layer_norm \

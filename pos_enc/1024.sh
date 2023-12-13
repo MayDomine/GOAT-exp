@@ -1,1 +1,1 @@
-python arxiv_node2vec.py --embedding_dim 256
+python arxiv_node2vec.py --embedding_dim 64

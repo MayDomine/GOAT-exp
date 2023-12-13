@@ -103,7 +103,7 @@ class TransformerConv(MessagePassing):
                 self.lin_value_g = Linear(global_dim, heads * out_channels)
             else:
                 self.lin_query_g = Linear(in_channels*2, heads * out_channels)
-                self.lin_key_g = Linear(in_channels, heads * out_channels)
+                self.lin_key_g = Linear(in_channels*2, heads * out_channels)
                 self.lin_value_g = Linear(in_channels, heads * out_channels)
 
         self.reset_parameters()
@@ -120,7 +120,7 @@ class TransformerConv(MessagePassing):
 
         torch.nn.init.zeros_(self.spatial_encoder.weight)
 
-    def _flash_forward(query, key, value):
+    def _flash_forward(self, query, key, value):
         cu_seqlens_q = torch.tensor([0, query.size(0)], dtype=torch.int32, device="cuda")
         cu_seqlens_k = torch.tensor([0, key.size(0)], dtype=torch.int32, device="cuda")
         max_seqlen_q = query.size(0)
@@ -132,9 +132,12 @@ class TransformerConv(MessagePassing):
     def flash_forward(self, x, pos_enc, batch_idx):
         H, C = self.heads, self.out_channels 
         x_q = x[:len(batch_idx)] 
-        x_q = torch.cat([x_q, pos_enc], dim=1)
-        query = self.lin_query_g(x_q).view(-1, H, C)
-        key = self.lin_key_g(x).view(-1, H, C)
+#        x_q = torch.cat([x_q, pos_enc[:len(batch_idx)]], dim=1)
+        x_q = x_q + pos_enc[:len(batch_idx)]
+#        x_k = torch.cat([x, pos_enc], dim=1)
+        x_k = x + pos_enc
+        query = self.lin_query(x_q).view(-1, H, C)
+        key = self.lin_key(x_k).view(-1, H, C)
         value = self.lin_value(x).view(-1, H, C)
         out = self._flash_forward(query, key, value)
 
@@ -267,7 +270,7 @@ class Transformer(torch.nn.Module):
             norm_func = nn.BatchNorm1d
         elif norm_type == 'layer_norm' :
             norm_func = nn.LayerNorm
-
+        self.global_flash = global_flash
         if no_bn :
             self.fc_in = nn.Sequential(
                 nn.Linear(in_channels, hidden_channels),

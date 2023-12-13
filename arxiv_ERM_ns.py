@@ -61,7 +61,9 @@ def train(model, loader, x, pos_enc, y, optimizer, device, conv_type):
             edge_index, edge_dist = edge_index[:2], edge_index[2:]
 
             feat = x[node_idx] if torch.is_tensor(x) else x(node_idx)
-            input = feat.to(device), edge_index.to(device), edge_dist.to(device), pos_enc[node_idx[:batch_size]].to(device), node_idx[:batch_size]            
+            feat = feat.to(dtype=pos_enc.dtype)
+            pos = pos_enc[node_idx].to(device) if model.global_flash else pos_enc[node_idx[:batch_size]].to(device)
+            input = feat.to(device), edge_index.to(device), edge_dist.to(device), pos, node_idx[:batch_size]            
             
             optim_manager.zero_grad()
             out = model.to(device)(*input)
@@ -114,7 +116,9 @@ def test(model, loader, x, pos_enc, y, device, conv_type, fast_eval=False):
 
             edge_index, edge_dist = edge_index[:2], edge_index[2:]
             feat = x[node_idx] if torch.is_tensor(x) else x(node_idx)
-            out = model.to(device)(feat.to(device), edge_index.to(device), edge_dist.to(device), pos_enc[node_idx[:batch_size]].to(device), node_idx[:batch_size])
+            pos = pos_enc[node_idx].to(device) if model.global_flash else pos_enc[node_idx[:batch_size]].to(device)
+            feat = feat.to(dtype=pos.dtype)
+            out = model.to(device)(feat.to(device), edge_index.to(device), edge_dist.to(device), pos , node_idx[:batch_size])
 
             total_correct += out.argmax(dim=-1).cpu().eq(y[node_idx[:batch_size]]).sum().item()
             total_count += batch_size
